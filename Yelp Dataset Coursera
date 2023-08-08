@@ -1,0 +1,599 @@
+Project by Igor Geller
+
+
+/*
+Data Scientist Role Play: Profiling and Analyzing the Yelp Dataset Coursera Worksheet
+
+This is a 2-part assignment. In the first part, you are asked a series of questions that will help you profile and understand the data just like a data scientist would. For this first part of the assignment, you will be assessed both on the correctness of your findings, as well as the code you used to arrive at your answer. You will be graded on how easy your code is to read, so remember to use proper formatting and comments where necessary.
+
+In the second part of the assignment, you are asked to come up with your own inferences and analysis of the data for a particular research question you want to answer. You will be required to prepare the dataset for the analysis you choose to do. As with the first part, you will be graded, in part, on how easy your code is to read, so use proper formatting and comments to illustrate and communicate your intent as required.
+
+For both parts of this assignment, use this "worksheet." It provides all the questions you are being asked, and your job will be to transfer your answers and SQL coding where indicated into this worksheet so that your peers can review your work. You should be able to use any Text Editor (Windows Notepad, Apple TextEdit, Notepad ++, Sublime Text, etc.) to copy and paste your answers. If you are going to use Word or some other page layout application, just be careful to make sure your answers and code are lined appropriately.
+In this case, you may want to save as a PDF to ensure your formatting remains intact for you reviewer.
+*/
+
+
+-- Part 1: Yelp Dataset Profiling and Understanding
+
+-- 1. Profile the data by finding the total number of records for each of the tables below:
+
+/* 
+i. Attribute table = 10000
+ii. Business table = 10000
+iii. Category table = 10000
+iv. Checkin table = 10000
+v. elite_years table = 10000
+vi. friend table = 10000
+vii. hours table = 10000
+viii. photo table = 10000
+ix. review table = 10000
+x. tip table = 10000
+xi. user table = 10000
+*/
+
+
+
+SELECT COUNT(*) FROM Attribute;
+
+SELECT COUNT(*) FROM Business;
+
+SELECT COUNT(*) FROM Category;
+
+SELECT COUNT(*) FROM Checkin;
+
+SELECT COUNT(*) FROM elite_years;
+
+SELECT COUNT(*) FROM friend;
+
+SELECT COUNT(*) FROM hours;
+
+SELECT COUNT(*) FROM photo;
+
+SELECT COUNT(*) FROM review;
+
+SELECT COUNT(*) FROM tip;
+
+SELECT COUNT(*) FROM user;
+
+
+-- 2. Find the total distinct records by either the foreign key or primary key for each table. If two foreign keys are listed in the table, please specify which foreign key.
+
+/* 
+i. Business = 10000 (primary key is id column)
+ii. Hours = 1562 (foreign key is business_id column)
+iii. Category = 2643 (foreign key is business_id column)
+iv. Attribute = 1115 (foreign key is business_id column)
+v. Review = 10000 (primary key is id column)
+			8090 (foreign key is business_id column) 
+ 			9581 (foreign key is user_id column)
+vi. Checkin = 493 (foreign key is business_id)
+vii. Photo = 10000 (primary key is id column)
+			 6493 (foreign key is business_id column)	
+viii. Tip = 3979 (foreign key is business_id column)
+			537 (foreign key is user_id column)
+ix. User = 10000 (primary key is id column)	   
+x. Friend = 11 (foreign key is user_id column)
+xi. Elite_years = 2780 (foreign key is user_id column)
+*/
+
+SELECT COUNT(distinct id) FROM Business;
+
+SELECT count(distinct business_id) FROM hours;
+
+SELECT COUNT(distinct business_id) FROM Category;
+
+SELECT COUNT(distinct business_id) FROM Attribute;
+
+SELECT COUNT(distinct id) FROM review;
+SELECT COUNT(distinct business_id) FROM review;
+SELECT COUNT(distinct user_id) FROM review;
+
+SELECT COUNT(distinct business_id) FROM Checkin;
+
+SELECT COUNT(distinct id) FROM photo;
+SELECT COUNT(distinct business_id) FROM photo;
+
+SELECT count(distinct business_id) FROM tip;
+SELECT COUNT(distinct user_id) FROM tip;
+
+SELECT count(distinct id) FROM user;
+
+SELECT count(distinct user_id) FROM friend; 
+
+SELECT count(distinct user_id) FROM elite_years;
+
+
+-- 3. Are there any columns with null values in the Users table? Indicate "yes," or "no."
+
+ -- There is no any column contained null value
+
+-- Lets fing out is there any column with NULL value
+select * from user
+where id is null 
+    or name is null 
+    or review_count is null 
+    or yelping_since is null 
+    or useful is null 
+    or funny is null 
+    or cool is null 
+    or fans is null 
+    or average_stars is null 
+    or compliment_hot is null 
+    or compliment_more is null 
+    or compliment_profile is null 
+    or compliment_cute is null 
+    or compliment_list is null 
+    or compliment_note is null 
+    or compliment_plain is null 
+    or compliment_cool is null 
+    or compliment_funny is null 
+    or compliment_writer is null 
+    or compliment_photos is null 
+
+
+/* 4. For each table and column listed below, display the smallest (minimum), largest (maximum), and average (mean) value for the following fields:
+
+	i. Table: Review, Column: Stars
+	
+		min: 1		max: 5		avg: 3.7082
+		
+	
+	ii. Table: Business, Column: Stars
+	
+		min: 1.0	max: 5.0	avg: 3.6549
+		
+	
+	iii. Table: Tip, Column: Likes
+	
+		min: 0 		max: 2		avg: 0.0144
+		
+	
+	iv. Table: Checkin, Column: Count
+	
+		min: 1		max: 53		avg: 1.9414
+		
+	
+	v. Table: User, Column: Review_count
+	
+		min: 0		max: 2000	avg: 24.2995
+
+*/
+
+-- Lets use MIN , MAX , AVG functions for this task 
+
+SELECT MIN(stars), MAX(stars), AVG(stars) FROM review;
+
+SELECT MIN(stars), MAX(stars), AVG(stars) FROM business;
+
+SELECT MIN(likes), MAX(likes), AVG(likes) FROM tip;
+
+SELECT MIN(count), MAX(count), AVG(count) FROM checkin;
+
+SELECT MIN(review_count), MAX(review_count), AVG(review_count) FROM user;
+
+
+-- 5. List the cities with the most reviews in descending order: 
+
+
+--SQL code used to arrive at answer:
+
+-- Lets use aggrigate function SUM to calculate total review_count column
+SELECT city , SUM(review_count) AS reviews
+FROM business
+GROUP BY city 
+ORDER BY  2 DESC;
+
+	
+/*
+
+Copy and Paste the Result Below:
+
+	+-----------------+---------+
+| city            | reviews |
++-----------------+---------+
+| Las Vegas       |   82854 |
+| Phoenix         |   34503 |
+| Toronto         |   24113 |
+| Scottsdale      |   20614 |
+| Charlotte       |   12523 |
+| Henderson       |   10871 |
+| Tempe           |   10504 |
+| Pittsburgh      |    9798 |
+| Montréal        |    9448 |
+| Chandler        |    8112 |
+| Mesa            |    6875 |
+| Gilbert         |    6380 |
+| Cleveland       |    5593 |
+| Madison         |    5265 |
+| Glendale        |    4406 |
+| Mississauga     |    3814 |
+| Edinburgh       |    2792 |
+| Peoria          |    2624 |
+| North Las Vegas |    2438 |
+| Markham         |    2352 |
+| Champaign       |    2029 |
+| Stuttgart       |    1849 |
+| Surprise        |    1520 |
+| Lakewood        |    1465 |
+| Goodyear        |    1155 |
++-----------------+---------+
+(Output limit exceeded, 25 of 362 total rows shown)
+
+*/
+
+
+
+--6. Find the distribution of star ratings to the business in the following cities:
+
+--i. Avon
+
+--SQL code used to arrive at answer:
+
+SELECT stars , COUNT(stars) AS count  FROM business 
+WHERE city = 'Avon'
+GROUP BY  1;
+
+--Copy and Paste the Resulting Table Below (2 columns â€“ star rating and count):
+
+/*
++-------+-------+
+| stars | count |
++-------+-------+
+|   1.5 |     1 |
+|   2.5 |     2 |
+|   3.5 |     3 |
+|   4.0 |     2 |
+|   4.5 |     1 |
+|   5.0 |     1 |
++-------+-------+
+
+*/
+
+--ii. Beachwood
+
+--SQL code used to arrive at answer:
+
+SELECT stars , COUNT(stars) AS count  FROM business 
+WHERE city = 'Beachwood'
+GROUP BY  1;
+
+--Copy and Paste the Resulting Table Below (2 columns â€“ star rating and count):
+
+/*
++-------+-------+
+| stars | count |
++-------+-------+
+|   2.0 |     1 |
+|   2.5 |     1 |
+|   3.0 |     2 |
+|   3.5 |     2 |
+|   4.0 |     1 |
+|   4.5 |     2 |
+|   5.0 |     5 |
++-------+-------+
+*/
+
+
+-- 7. Find the top 3 users based on their total number of reviews:
+		
+--	SQL code used to arrive at answer:
+
+-- Lets group by name 
+SELECT name ,review_count FROM user
+GROUP BY 1 
+ORDER BY 2 DESC 
+LIMIT 3;
+		
+--	Copy and Paste the Result Below:
+
+/*
++--------+--------------+
+| name   | review_count |
++--------+--------------+
+| Gerald |         2000 |
+| .Hon   |         1246 |
+| eric   |         1116 |
++--------+--------------+
+*/
+
+-- 8. Does posing more reviews correlate with more fans?
+
+-- Answer : NO
+
+--	Please explain your findings and interpretation of the results:
+
+-- Lets order by fans 
+SELECT name, review_count, fans FROM user
+ORDER BY fans DESC;
+
+/*
++-----------+--------------+------+
+| name      | review_count | fans |
++-----------+--------------+------+
+| Amy       |          609 |  503 |
+| Mimi      |          968 |  497 |
+| Harald    |         1153 |  311 |
+| Gerald    |         2000 |  253 |
+| Christine |          930 |  173 |
+| Lisa      |          813 |  159 |
+| Cat       |          377 |  133 |
+| William   |         1215 |  126 |
+| Fran      |          862 |  124 |
+| Lissa     |          834 |  120 |
+| Mark      |          861 |  115 |
+| Tiffany   |          408 |  111 |
+| bernice   |          255 |  105 |
+| Roanna    |         1039 |  104 |
+| Angela    |          694 |  101 |
+| .Hon      |         1246 |  101 |
+| Ben       |          307 |   96 |
+| Linda     |          584 |   89 |
+| Christina |          842 |   85 |
+| Jessica   |          220 |   84 |
+| Greg      |          408 |   81 |
+| Nieves    |          178 |   80 |
+| Sui       |          754 |   78 |
+| Yuri      |         1339 |   76 |
+| Nicole    |          161 |   73 |
++-----------+--------------+------+
+(Output limit exceeded, 25 of 10000 total rows shown)
+*/
+
+-- 9. Are there more reviews with the word "love" or with the word "hate" in them?
+
+--	Answer: More reviews with word 'love'  
+
+	
+--	SQL code used to arrive at answer:
+
+-- Lets use nested query to find out which word used more
+SELECT (SELECT count(text) FROM review
+	WHERE text like "%love%") AS  love_text, 
+        (SELECT count(text) FROM review
+	        WHERE text like "%hate%") AS hate_text; 
+
+/*
++-----------+-----------+
+| love_text | hate_text |
++-----------+-----------+
+|      1780 |       232 |
++-----------+-----------+
+*/
+
+-- 10. Find the top 10 users with the most fans:
+
+--	SQL code used to arrive at answer:
+
+SELECT name, fans FROM user
+ORDER BY 2 DESC
+LIMIT 10;
+		
+--	Copy and Paste the Result Below:
+
+/*
++-----------+------+
+| name      | fans |
++-----------+------+
+| Amy       |  503 |
+| Mimi      |  497 |
+| Harald    |  311 |
+| Gerald    |  253 |
+| Christine |  173 |
+| Lisa      |  159 |
+| Cat       |  133 |
+| William   |  126 |
+| Fran      |  124 |
+| Lissa     |  120 |
++-----------+------+
+*/
+
+-- Part 2: Inferences and Analysis
+
+-- 1. Pick one city and category of your choice and group the businesses in that city or category by their overall star rating. Compare the businesses with 2-3 stars to the businesses with 4-5 stars and answer the following questions. Include your code.
+	
+-- City = Toronto  Category = Pubs
+
+-- i. Do the two groups you chose to analyze have a different distribution of hours?
+
+-- Answer : Yes pubs with 2-3 stars works on average 10:00-2:00 when pubs with 4-5 stars works on average 11:00-21:00  all pubs works across whole week. As we can conclude here the pubs with lower stars have more working hours which may inpact on workers productivity and then on clients satisfaction 
+
+-- ii. Do the two groups you chose to analyze have a different number of reviews?
+
+-- Answer : star_group with 2-3 stars has more on average review (35.0) than star_group with 4-5 stars  (20.92)      
+         
+-- iii. Are you able to infer anything from the location data provided between these two groups? Explain.
+
+-- Answer : Pubs with 2-3 starts located in Greektown 535 Danforth Ave  and pubs with 4-5 stars located in High Park/1669 Bloor Street W  and Wallace Emerson/247 Wallace Avenue  respectively.
+
+-- SQL code used for analysis:
+
+SELECT city
+       ,category
+       ,round(avg(review_count),2) as avg_review			-- number of reviews per business within each group
+       ,count(b.id) as num_of_businesses
+       ,hours 
+       ,address
+       ,neighborhood ,
+
+CASE								-- add categorical variable for the "2-3 stars" and "4-5 stars" categories 
+  WHEN stars BETWEEN 2.0 and 3.0 THEN '2-3 stars'
+  WHEN stars BETWEEN 4.0 and 5.0 THEN '4-5 stars'
+  ELSE NULL 
+END star_group
+
+from business b							-- city comes from the "business" table and category comes from the "category" table
+     LEFT JOIN category c 
+     ON b.id = c.business_id
+     LEFT JOIN hours h 
+     ON b.id = h.business_id
+
+WHERE city = 'Toronto' AND category = 'Pubs' 
+GROUP BY 5, 6
+ORDER BY star_group DESC;
+
+/*
++---------+----------+------------+-------------------+----------------------+--------------------+-----------------+------------+
+| city    | category | avg_review | num_of_businesses | hours                | address            | neighborhood    | star_group |
++---------+----------+------------+-------------------+----------------------+--------------------+-----------------+------------+
+| Toronto | Pubs     |      20.92 |                13 | Saturday|11:00-21:00 | 247 Wallace Avenue | Wallace Emerson | 4-5 stars  |
+| Toronto | Pubs     |       35.0 |                 7 | Saturday|10:00-2:00  | 535 Danforth Ave   | Greektown       | 2-3 stars  |
++---------+----------+------------+-------------------+----------------------+--------------------+-----------------+------------+
+
+*/
+
+-- But if we will group our query by address and neighborhood the result will be different
+
+SELECT city
+       ,category
+       ,round(avg(review_count),2) as avg_review			-- number of reviews per business within each group
+       ,count(b.id) as num_of_businesses
+       ,hours 
+       ,address
+       ,neighborhood ,
+
+CASE								-- add categorical variable for the "2-3 stars" and "4-5 stars" categories
+  WHEN stars BETWEEN 2.0 and 3.0 THEN '2-3 stars'
+  WHEN stars BETWEEN 4.0 and 5.0 THEN '4-5 stars'
+  ELSE NULL 
+END star_group
+
+from business b							-- city comes from the "business" table and category comes from the "category" table
+     LEFT JOIN category c 
+     ON b.id = c.business_id
+     LEFT JOIN hours h 
+     ON b.id = h.business_id
+
+WHERE city = 'Toronto' AND category = 'Pubs' 
+GROUP BY 5, 6
+ORDER BY star_group DESC;
+
+/*
+
+-- Now we can see the whole picture and our analysis will be percise .
+
++---------+----------+------------+-------------------+-----------------------+---------------------+-----------------+------------+
+| city    | category | avg_review | num_of_businesses | hours                 | address             | neighborhood    | star_group |
++---------+----------+------------+-------------------+-----------------------+---------------------+-----------------+------------+
+| Toronto | Pubs     |       15.0 |                 1 | Friday|15:00-21:00    | 247 Wallace Avenue  | Wallace Emerson | 4-5 stars  |
+| Toronto | Pubs     |       26.0 |                 1 | Friday|18:00-2:00     | 1669 Bloor Street W | High Park       | 4-5 stars  |
+| Toronto | Pubs     |       26.0 |                 1 | Monday|16:00-2:00     | 1669 Bloor Street W | High Park       | 4-5 stars  |
+| Toronto | Pubs     |       15.0 |                 1 | Saturday|11:00-21:00  | 247 Wallace Avenue  | Wallace Emerson | 4-5 stars  |
+| Toronto | Pubs     |       26.0 |                 1 | Saturday|16:00-2:00   | 1669 Bloor Street W | High Park       | 4-5 stars  |
+| Toronto | Pubs     |       15.0 |                 1 | Sunday|11:00-21:00    | 247 Wallace Avenue  | Wallace Emerson | 4-5 stars  |
+| Toronto | Pubs     |       26.0 |                 1 | Sunday|16:00-2:00     | 1669 Bloor Street W | High Park       | 4-5 stars  |
+| Toronto | Pubs     |       15.0 |                 1 | Thursday|15:00-21:00  | 247 Wallace Avenue  | Wallace Emerson | 4-5 stars  |
+| Toronto | Pubs     |       26.0 |                 1 | Thursday|18:00-2:00   | 1669 Bloor Street W | High Park       | 4-5 stars  |
+| Toronto | Pubs     |       15.0 |                 1 | Tuesday|15:00-21:00   | 247 Wallace Avenue  | Wallace Emerson | 4-5 stars  |
+| Toronto | Pubs     |       26.0 |                 1 | Tuesday|18:00-2:00    | 1669 Bloor Street W | High Park       | 4-5 stars  |
+| Toronto | Pubs     |       15.0 |                 1 | Wednesday|15:00-21:00 | 247 Wallace Avenue  | Wallace Emerson | 4-5 stars  |
+| Toronto | Pubs     |       26.0 |                 1 | Wednesday|18:00-2:00  | 1669 Bloor Street W | High Park       | 4-5 stars  |
+| Toronto | Pubs     |       35.0 |                 1 | Friday|11:00-2:00     | 535 Danforth Ave    | Greektown       | 2-3 stars  |
+| Toronto | Pubs     |       35.0 |                 1 | Monday|11:00-2:00     | 535 Danforth Ave    | Greektown       | 2-3 stars  |
+| Toronto | Pubs     |       35.0 |                 1 | Saturday|10:00-2:00   | 535 Danforth Ave    | Greektown       | 2-3 stars  |
+| Toronto | Pubs     |       35.0 |                 1 | Sunday|10:00-2:00     | 535 Danforth Ave    | Greektown       | 2-3 stars  |
+| Toronto | Pubs     |       35.0 |                 1 | Thursday|11:00-2:00   | 535 Danforth Ave    | Greektown       | 2-3 stars  |
+| Toronto | Pubs     |       35.0 |                 1 | Tuesday|11:00-2:00    | 535 Danforth Ave    | Greektown       | 2-3 stars  |
+| Toronto | Pubs     |       35.0 |                 1 | Wednesday|11:00-2:00  | 535 Danforth Ave    | Greektown       | 2-3 stars  |
++---------+----------+------------+-------------------+-----------------------+---------------------+-----------------+------------+
+
+*/
+
+
+-- 2. Group business based on the ones that are open and the ones that are closed. What differences can you find between the ones that are still open and the ones that are closed? List at least two differences and the SQL code you used to arrive at your answer.
+		
+-- i. Difference 1: open businesses have more review_count on average 
+         
+         
+-- ii. Difference 2: open businesses have more stars on average 
+              
+
+-- SQL code used for analysis:
+
+SELECT is_open
+        ,count(id) num_of_businesses
+        ,avg(review_count)
+        ,avg(stars)
+FROM business 
+GROUP BY 1;
+
+/*
++---------+-------------------+-------------------+---------------+
+| is_open | num_of_businesses | avg(review_count) |    avg(stars) |
++---------+-------------------+-------------------+---------------+
+|       0 |              1520 |     23.1980263158 | 3.52039473684 |
+|       1 |              8480 |     31.7570754717 | 3.67900943396 |
++---------+-------------------+-------------------+---------------+
+*/
+
+
+-- 3. For this last part of your analysis, you are going to choose the type of analysis you want to conduct on the Yelp dataset and are going to prepare the data for analysis.
+
+-- Ideas for analysis include: Parsing out keywords and business attributes for sentiment analysis, clustering businesses to find commonalities or anomalies between them, predicting the overall star rating for a business, predicting the number of fans a user will have, and so on. These are just a few examples to get you started, so feel free to be creative and come up with your own problem you want to solve. Provide answers, in-line, to all of the following:
+	
+-- i. Indicate the type of analysis you chose to do:  
+
+-- I want to check which city has potencial to wellness businesses
+                  
+-- ii. Write 1-2 brief paragraphs on the type of data you will need for your analysis and why you chose that data:
+ 
+ -- I will pick several types of personal-care categores including (yoga, beauty, fitness) because nowadays people prety obsessed with their look and this is big industry.
+
+-- So as we can see here cites like Toronto, Henderson and Brampton they all have some kind of such business.
+                           
+                  
+-- iii. Output of your finished dataset:
+
+/*
++---------------------------+------------------+-----------+----------+--------------+
+| category                  | count_businesses | city      | avg_star | review_count |
++---------------------------+------------------+-----------+----------+--------------+
+| Fitness & Instruction     |                3 | Toronto   |      4.3 |           14 |
+| Gyms                      |                2 | Toronto   |      4.0 |           14 |
+| Hair Removal              |                2 | Toronto   |      4.8 |           27 |
+| Yoga                      |                2 | Toronto   |      4.0 |           14 |
+| Cosmetics & Beauty Supply |                3 | Las Vegas |      3.7 |            6 |
+| Hair Extensions           |                1 | Henderson |      5.0 |            5 |
+| Hair Stylists             |                1 | Henderson |      5.0 |            5 |
+| Men's Hair Salons         |                1 | Henderson |      5.0 |            5 |
+| Beauty & Spas             |               13 | Charlotte |      3.9 |           10 |
+| Hair Salons               |                6 | Brampton  |      4.1 |            8 |
+| Nail Salons               |                2 | Brampton  |      4.0 |            8 |
+| Skin Care                 |                2 | Brampton  |      4.3 |            8 |
++---------------------------+------------------+-----------+----------+--------------+
+*/
+         
+         
+-- iv. Provide the SQL code you used to create your final dataset:
+
+
+SELECT  category,
+        COUNT(b.id) as count_businesses, 
+        city, round(avg(stars), 1) as avg_star, 
+        review_count  
+FROM business b 
+LEFT JOIN category c on b.id = c.business_id
+WHERE category like '%Hair%' 
+              or category like '%beauty%' 
+              or  category like '%yoga%' 
+              or category like '%fitness%'  
+              or category like '%Gym%'
+              or category like '%nail%'
+              or category like '%skin%'
+GROUP BY category
+ORDER BY city DESC;
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
